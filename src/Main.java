@@ -1,6 +1,12 @@
+import jdk.nashorn.internal.ir.LexicalContext;
+import jdk.nashorn.internal.ir.LexicalContextNode;
+
 import java.sql.*;
+import java.util.Scanner;
 
 public class Main {
+
+    static Scanner scn = new Scanner(System.in);
 
     public static void main(String[] args) {
         String dbAddress = "jdbc:mysql://projgw.cse.cuhk.edu.hk:2633/db17";
@@ -23,39 +29,115 @@ public class Main {
 
         try {
             Statement stmt = con.createStatement();
-//            String sqlCreate = "CREATE table Student(sid integer primary key, name varchar(30) not null, year integer, age integer)";
-//            stmt.execute(sqlCreate);  //Already created table Student
-
-            String sqlInsert = "INSERT INTO Student values(?,?,?,?)";
-            int sid = 1155;
-            String name = "Potato";
-            int year = 2020;
-            int age = 99;
-            PreparedStatement pstmt = con.prepareStatement(sqlInsert);
-            pstmt.setInt(1,sid);
-            pstmt.setString(2,name);
-            pstmt.setInt(3,year);
-            pstmt.setInt(4,age);
-//            pstmt.executeUpdate();
-
-            String sqlSelect = "SELECT * from Student;";
-            ResultSet resultSet = stmt.executeQuery(sqlSelect);
-            if(!resultSet.isBeforeFirst()){
-                System.out.println("table is empty");
-            }else {
-                while (resultSet.next()){
-                    System.out.println(resultSet.getString(1));
-                    System.out.println(resultSet.getString("name"));
-                    System.out.println(resultSet.getString(3));
-                    System.out.println(resultSet.getString(4));
-                }
-            }
-
+//            String sqlCreate = "CREATE table Category(cid tinyint primary key, max tinyint not null, period tinyint not null);";
+//            String sqlCreate = "";
+//            stmt.execute(sqlCreate);
         } catch (SQLException e) {
             System.out.println(e);
         }
 
+        System.out.println("Welcome to library inquery system!\n");
+        displayMainMenu();
+
+
 
     }
+
+    static void displayMainMenu(){
+        System.out.println("-----Main Menu-----\n"+
+                "What kinds of operation do you want to perform?\n" +
+                "1.Operations for administrator\n"+
+                "2.Operations for library user\n"+
+                "3.Operations for librarian\n"+
+                "4.Operations for library director\n"+
+                "5.Exit the program");
+        boolean flag = false;
+        int choice = 0;
+        while(!(flag)) {
+            try{
+                choice = Integer.valueOf(scn.nextLine());
+            } catch (Exception e){
+                System.out.println("Invalid input");
+                continue;
+            }
+            if (!(choice >=1 && choice<=5)) {
+                System.out.println("Invalid input");
+                continue;
+            }else flag = true;
+
+        }
+
+        switch(choice) {
+            case 1:
+                admin();
+                break;
+            case 2:
+                libUser();
+                break;
+            case 3:
+                librarian();
+                break;
+            case 4:
+                libDirector();
+                break;
+            case 5:
+                return;
+
+        }
+    }
+
+    private static void libDirector() {
+    }
+
+    private static void librarian() {
+    }
+
+    private static void libUser() {
+    }
+
+    private static void admin() {
+        System.out.println("-----Operations for administrator menu-----\n"+
+                "What kinds of operation do you want to perform?\n" +
+                "1.Create all tables\n"+
+                "2.Delete all tables\n"+
+                "3.Load from datafile\n"+
+                "4.Show number of records in each table\n"+
+                "5.Return to the main menu");
+        boolean flag = false;
+        int choice = 0;
+        while(!(flag)) {
+            try{
+                choice = Integer.valueOf(scn.nextLine());
+            } catch (Exception e){
+                System.out.println("Invalid input");
+                continue;
+            }
+            if (!(choice >=1 && choice<=5)) {
+                System.out.println("Invalid input");
+                continue;
+            }else flag = true;
+
+        }
+
+        switch(choice) {
+            case 1:
+
+                break;
+            case 2:
+
+                break;
+            case 3:
+
+                break;
+            case 4:
+
+                break;
+            case 5:
+                displayMainMenu();
+
+        }
+    }
+
+
 
 }
