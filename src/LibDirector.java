@@ -1,3 +1,7 @@
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+
 public class LibDirector {
     public LibDirector() {
         boolean finish = false;
@@ -25,6 +29,30 @@ public class LibDirector {
 
             switch (choice) {
                 case 1:
+                    System.out.print("Type in the starting date [dd/mm/yyyy]: ");
+                    String stDate = Main.scn.nextLine();
+                    System.out.print("Type in the ending date [dd/mm/yyyy]: ");
+                    String endDate = Main.scn.nextLine();
+                    System.out.println("List of UnReturned Book:");
+                    String sqlQuery = String.format("Select * from borrow WHERE `return` is null AND checkout BETWEEN STR_TO_DATE('%s', '%%d/%%m/%%Y') AND STR_TO_DATE('%s' , '%%d/%%m/%%Y');", stDate, endDate);
+                    try {
+                        ResultSet resultSet = Main.stmt.executeQuery(sqlQuery);
+                        ResultSetMetaData rsmd = resultSet.getMetaData();
+                        int columnsNumber = rsmd.getColumnCount();
+                        for (int i = 1; i <= columnsNumber - 1; i++) {
+                            System.out.print("|" + rsmd.getColumnName(i));
+                        }
+                        System.out.println("|");
+                        while (resultSet.next()) {
+                            for (int i = 1; i <= columnsNumber - 1; i++) {
+                                System.out.print("|" + resultSet.getString(i));
+                            }
+                            System.out.println("|");
+                        }
+                        System.out.println("End of Query");
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                     break;
 
                 case 2:

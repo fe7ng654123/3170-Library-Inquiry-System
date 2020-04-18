@@ -77,14 +77,12 @@ public class Admin {
                         for (int i = 0; i < 6; i++) {
                             String filePath = String.format("'%s/%s'", System.getProperty("user.dir"), fileNames[i]);
                             filePath = filePath.replace('\\', '/');
-
                             String sqlLoad = String.format("LOAD DATA LOCAL INFILE %s INTO TABLE %s FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' (%s)",
                                     filePath, tables[i], attributes[i]);
                             if (i == 1) sqlLoad = sqlLoad.concat(" SET publish = STR_TO_DATE(@publish,'%d/%m/%Y')");
-//                            if (i == 4)  sqlLoad = sqlLoad.concat(" SET checkout = STR_TO_DATE(@checkout,'%d/%m/%Y')");
                             if (i == 4)
                                 sqlLoad = sqlLoad.concat(" SET checkout = STR_TO_DATE(@checkout,'%d/%m/%Y') , `return` = STR_TO_DATE(@ret,'%d/%m/%Y')");
-                            System.out.println(sqlLoad);
+//                            System.out.println(sqlLoad);
                             Main.stmt.execute(sqlLoad);
                         }
 
@@ -92,8 +90,8 @@ public class Admin {
                     } catch (Exception e) {
                         System.out.println(e);
                     }
-//                    #TODO
                     break;
+
                 case 4:
                     String sqlRecordNum = "SELECT \"authorship\" AS table_name, COUNT(*) AS exact_row_count FROM `db17`.`authorship` UNION SELECT \"book\" AS table_name, COUNT(*) AS exact_row_count FROM `db17`.`book` UNION SELECT \"borrow\" AS table_name, COUNT(*) AS exact_row_count FROM `db17`.`borrow` UNION SELECT \"category\" AS table_name, COUNT(*) AS exact_row_count FROM `db17`.`category` UNION SELECT \"copy\" AS table_name, COUNT(*) AS exact_row_count FROM `db17`.`copy` UNION SELECT \"libuser\" AS table_name, COUNT(*) AS exact_row_count FROM `db17`.`libuser`;";
                     try {

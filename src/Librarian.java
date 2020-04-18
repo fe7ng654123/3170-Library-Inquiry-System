@@ -1,3 +1,8 @@
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class Librarian {
     public Librarian() {
         boolean finish = false;
@@ -26,8 +31,41 @@ public class Librarian {
 
             switch (choice) {
                 case 1:
+                    System.out.print("Enter The User ID: ");
+                    String uid = Main.scn.nextLine();
+                    System.out.print("Enter The Call Number: ");
+                    String callnum = Main.scn.nextLine();
+                    System.out.print("Enter The Copy Number: ");
+                    String copynum = Main.scn.nextLine();
+                    String now = LocalDate.now().toString();
+//                    System.out.println(now);
+                    String sqlInsert = String.format("INSERT into borrow(libuid, callnum, copynum, checkout) VALUES ('%s','%s','%s','%s');", uid, callnum, copynum, now);
+                    try {
+                        Main.stmt.execute(sqlInsert);
+                        System.out.println("Book borrowing performed successfully!!!");
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        System.out.println("Cannot borrow this book!");
+                    }
+
                     break;
                 case 2:
+                    System.out.print("Enter The User ID: ");
+                    uid = Main.scn.nextLine();
+                    System.out.print("Enter The Call Number: ");
+                    callnum = Main.scn.nextLine();
+                    System.out.print("Enter The Copy Number: ");
+                    copynum = Main.scn.nextLine();
+                    now = LocalDate.now().toString();
+//                    System.out.println(now);
+                    sqlInsert = String.format("Update borrow SET `return` = '2020-04-18' where libuid like '%s' AND callnum like '%s' AND copynum like '%s' AND `return` is NULL;", uid, callnum, copynum);
+                    try {
+                        Main.stmt.execute(sqlInsert);
+                        System.out.println("Book returning performed successfully!!!");
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        System.out.println("Cannot return this book!");
+                    }
                     break;
                 case 3:
                     Main.displayMainMenu();
