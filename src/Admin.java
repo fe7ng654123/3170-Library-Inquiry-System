@@ -1,6 +1,3 @@
-import com.sun.xml.internal.bind.v2.TODO;
-
-import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -65,14 +62,14 @@ public class Admin {
                     break;
                 case 3:
                     try {
-                        String fileNames[] = new String[]{"category.txt", "book.txt", "book.txt", "book.txt", "check_out.txt", "user.txt"};
-                        String tables[] = new String[]{"category", "book", "authorship", "copy", "borrow", "libuser"};
+                        String fileNames[] = new String[]{"category.txt", "book.txt", "book.txt", "book.txt", "user.txt", "check_out.txt"};
+                        String tables[] = new String[]{"category", "book", "authorship", "copy", "libuser", "borrow"};
                         String attributes[] = new String[]{"cid, max, period", //category
                                 "callnum, @dummy,title, @dummy, @publish",    //book
                                 "callnum, @dummy, @dummy, aname, @dummy",   //authorship
                                 "callnum, copynum, @dummy, @dummy, @dummy", //copy
+                                "libuid, name, address, cid",    //libuser
                                 "callnum, copynum, libuid, @checkout, @ret",  //borrow
-                                "libuid, name, address, cid"    //libuser
                         };
                         for (int i = 0; i < 6; i++) {
                             String filePath = String.format("'%s/%s'", System.getProperty("user.dir"), fileNames[i]);
@@ -80,7 +77,7 @@ public class Admin {
                             String sqlLoad = String.format("LOAD DATA LOCAL INFILE %s INTO TABLE %s FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' (%s)",
                                     filePath, tables[i], attributes[i]);
                             if (i == 1) sqlLoad = sqlLoad.concat(" SET publish = STR_TO_DATE(@publish,'%d/%m/%Y')");
-                            if (i == 4)
+                            if (i == 5)
                                 sqlLoad = sqlLoad.concat(" SET checkout = STR_TO_DATE(@checkout,'%d/%m/%Y') , `return` = STR_TO_DATE(@ret,'%d/%m/%Y')");
 //                            System.out.println(sqlLoad);
                             Main.stmt.execute(sqlLoad);

@@ -1,6 +1,3 @@
-import jdk.nashorn.internal.ir.LexicalContext;
-import jdk.nashorn.internal.ir.LexicalContextNode;
-
 import java.sql.*;
 import java.util.Scanner;
 
