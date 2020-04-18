@@ -1,8 +1,9 @@
 import com.sun.xml.internal.bind.v2.TODO;
 
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.concurrent.TransferQueue;
+
 
 public class Admin {
 
@@ -41,7 +42,7 @@ public class Admin {
                     sqlCreate[1] = "CREATE TABLE libuser(libuid CHAR(10) NOT NULL, name VARCHAR(25) NOT NULL, address VARCHAR(100) NOT NULL, cid TINYINT NOT NULL, PRIMARY KEY(libuid));";
                     sqlCreate[2] = "CREATE TABLE book(callnum CHAR(8) NOT NULL, title VARCHAR(30) NOT NULL, publish DATE NOT NULL, PRIMARY KEY(callnum));";
                     sqlCreate[3] = "CREATE TABLE copy(callnum CHAR(8) NOT NULL, copynum TINYINT NOT NULL, PRIMARY KEY(callnum, copynum), FOREIGN KEY(callnum) REFERENCES book(callnum));";
-                    sqlCreate[4] = "CREATE TABLE borrow(libuid CHAR(10) NOT NULL, callnum CHAR(8) NOT NULL, copynum TINYINT NOT NULL, checkout DATE NOT NULL, `return` DATE, PRIMARY KEY(libuid, callnum, copynum, checkout), FOREIGN KEY(libuid) REFERENCES libuser(libuid), FOREIGN KEY(callnum, copynum) REFERENCES copy(callnum, copynum));";
+                    sqlCreate[4] = "CREATE TABLE borrow(libuid CHAR(10) NOT NULL, callnum CHAR(8) NOT NULL, copynum TINYINT NOT NULL, checkout DATE NOT NULL, `return` DATE, PRIMARY KEY(libuid, callnum, copynum, checkout), FOREIGN KEY(libuid) REFERENCES libuser(libuid), FOREIGN KEY(callnum) REFERENCES book(callnum));";
                     sqlCreate[5] = "CREATE TABLE authorship(aname VARCHAR(255) NOT NULL, callnum CHAR(8) NOT NULL, PRIMARY KEY(aname, callnum), FOREIGN KEY(callnum) REFERENCES book(callnum));";
                     try {
                         for (int i = 0; i < 6; i++) {
@@ -63,6 +64,34 @@ public class Admin {
                     System.out.println("Deleted all tables!");
                     break;
                 case 3:
+                    try {
+                        String fileNames[] = new String[]{"category.txt", "book.txt", "book.txt", "book.txt", "check_out.txt", "user.txt"};
+                        String tables[] = new String[]{"category", "book", "authorship", "copy", "borrow", "libuser"};
+                        String attributes[] = new String[]{"cid, max, period", //category
+                                "callnum, @dummy,title, @dummy, @publish",    //book
+                                "callnum, @dummy, @dummy, aname, @dummy",   //authorship
+                                "callnum, copynum, @dummy, @dummy, @dummy", //copy
+                                "callnum, copynum, libuid, @checkout, @ret",  //borrow
+                                "libuid, name, address, cid"    //libuser
+                        };
+                        for (int i = 0; i < 6; i++) {
+                            String filePath = String.format("'%s/%s'", System.getProperty("user.dir"), fileNames[i]);
+                            filePath = filePath.replace('\\', '/');
+
+                            String sqlLoad = String.format("LOAD DATA LOCAL INFILE %s INTO TABLE %s FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' (%s)",
+                                    filePath, tables[i], attributes[i]);
+                            if (i == 1) sqlLoad = sqlLoad.concat(" SET publish = STR_TO_DATE(@publish,'%d/%m/%Y')");
+//                            if (i == 4)  sqlLoad = sqlLoad.concat(" SET checkout = STR_TO_DATE(@checkout,'%d/%m/%Y')");
+                            if (i == 4)
+                                sqlLoad = sqlLoad.concat(" SET checkout = STR_TO_DATE(@checkout,'%d/%m/%Y') , `return` = STR_TO_DATE(@ret,'%d/%m/%Y')");
+                            System.out.println(sqlLoad);
+                            Main.stmt.execute(sqlLoad);
+                        }
+
+
+                    } catch (Exception e) {
+                        System.out.println(e);
+                    }
 //                    #TODO
                     break;
                 case 4:
@@ -77,7 +106,8 @@ public class Admin {
                             }
                         }
                     } catch (SQLException e) {
-                        System.out.println(e);
+//                        System.out.println(e);
+                        System.out.println("You have not yet created the tables");
                     }
 
                     break;
