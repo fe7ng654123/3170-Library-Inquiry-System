@@ -1,3 +1,10 @@
+/*
+Group 17:
+LIN Chuanfeng	1155110077
+Lam Kwong Wai	1155079229
+Or Cheuk Yin	1155078796
+*/
+
 import java.sql.*;
 import java.util.Scanner;
 
@@ -73,9 +80,6 @@ public class Main {
 
         }
     }
-
-
-
 
 
 }

@@ -1,3 +1,4 @@
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
@@ -36,14 +37,16 @@ public class Librarian {
                     System.out.print("Enter The Copy Number: ");
                     String copynum = Main.scn.nextLine();
                     String now = LocalDate.now().toString();
-//                    System.out.println(now);
-                    String sqlInsert = String.format("INSERT into borrow(libuid, callnum, copynum, checkout) VALUES ('%s','%s','%s','%s');", uid, callnum, copynum, now);
                     try {
-                        Main.stmt.execute(sqlInsert);
-                        System.out.println("Book borrowing performed successfully!!!");
+                        if (checkInput(uid, callnum, copynum)) {
+                            String sqlInsert = String.format("INSERT into borrow(libuid, callnum, copynum, checkout) VALUES ('%s','%s','%s','%s');", uid, callnum, copynum, now);
+                            Main.stmt.execute(sqlInsert);
+                            System.out.println("Book borrowing performed successfully!!!");
+                        } else {
+                            System.out.println("This book is not available!");
+                        }
                     } catch (SQLException e) {
-                        e.printStackTrace();
-                        System.out.println("Cannot borrow this book!");
+                        System.out.println(e);
                     }
 
                     break;
@@ -56,13 +59,16 @@ public class Librarian {
                     copynum = Main.scn.nextLine();
                     now = LocalDate.now().toString();
 //                    System.out.println(now);
-                    String sqlUpdate = String.format("Update borrow SET `return` = '2020-04-18' where libuid like '%s' AND callnum like '%s' AND copynum like '%s' AND `return` is NULL;", uid, callnum, copynum);
                     try {
-                        Main.stmt.execute(sqlUpdate);
-                        System.out.println("Book returning performed successfully!!!");
+                        if (!checkInput(uid, callnum, copynum)) {
+                            String sqlUpdate = String.format("Update borrow SET `return` = '%s' where libuid like '%s' AND callnum like '%s' AND copynum like '%s' AND `return` is NULL;", now, uid, callnum, copynum);
+                            Main.stmt.execute(sqlUpdate);
+                            System.out.println("Book returning performed successfully!!!");
+                        } else {
+                            System.out.println("A matching borrow record is not found.");
+                        }
                     } catch (SQLException e) {
                         e.printStackTrace();
-                        System.out.println("Cannot return this book!");
                     }
                     break;
                 case 3:
@@ -72,5 +78,20 @@ public class Librarian {
 
             }
         }
+    }
+
+    private boolean checkInput(String uid, String callnum, String copynum) {
+        String sqlCheck = String.format("select count(*) from borrow where libuid like '%s' AND callnum like '%s' and copynum like '%s' AND `return` is NULL;", uid, callnum, copynum);
+        try {
+            ResultSet resultSet = Main.stmt.executeQuery(sqlCheck);
+            resultSet.next();
+            int count = Integer.valueOf(resultSet.getString(1));
+//            System.out.println("count = " +resultSet.getString(1));
+            if (count > 0) return false;
+            else return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

@@ -85,6 +85,7 @@ public class Admin {
 
 
                     } catch (Exception e) {
+                        System.out.println("Failed loading files into tables");
                         System.out.println(e);
                     }
                     break;
